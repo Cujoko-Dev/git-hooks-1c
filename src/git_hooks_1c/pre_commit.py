@@ -78,6 +78,8 @@ def remove_from_index(file_paths: list[Path]) -> None:
 
 
 def run(args) -> None:
+    """Запустить"""
+
     logger.enable("cjk_commons")
     logger.enable("parse_1c_build")
     logger.enable(__name__)
@@ -102,12 +104,14 @@ def run(args) -> None:
 
         if not args.keep_files:
             remove_from_index(for_processing_file_paths)
-    except Exception as e:
-        logger.exception(e)
+    except Exception as exc:
+        logger.exception(exc)
         sys.exit(1)
 
 
 def add_subparser(subparsers) -> None:
+    """Добавить подпарсер"""
+
     decs = "Pre-commit for 1C:Enterprise files"
 
     subparser = subparsers.add_parser(

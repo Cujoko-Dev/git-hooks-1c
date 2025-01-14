@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+
+"""CLI"""
+
+
 from argparse import ArgumentParser
 
 from cjk_commons.logging_ import add_logging_arguments
@@ -7,6 +11,8 @@ from git_hooks_1c import __version__, install, pre_commit, uninstall
 
 
 def get_argparser() -> ArgumentParser:
+    """Получить парсер командной строки"""
+
     parser = ArgumentParser(
         add_help=False,
         description="Git hooks utilities for 1C:Enterprise",

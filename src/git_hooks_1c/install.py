@@ -9,6 +9,8 @@ logger.disable(__name__)
 
 
 def run(args) -> None:
+    """Запустить"""
+
     logger.enable("cjk_commons")
     logger.enable("parse_1c_build")
     logger.enable(__name__)
@@ -35,12 +37,14 @@ def run(args) -> None:
         git("config", "--local", "core.longpaths", "true")
 
         logger.info("git-hooks-1c installed")
-    except Exception as e:
-        logger.exception(e)
+    except Exception as exc:
+        logger.exception(exc)
         sys.exit(1)
 
 
 def add_subparser(subparsers) -> None:
+    """Добавить подпарсер"""
+
     decs = "Install hooks"
 
     subparser = subparsers.add_parser(
