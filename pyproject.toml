@@ -31,7 +31,7 @@ license = {text = "MIT"}
 name = "git-hooks-1c"
 readme = "README.md"
 requires-python = ">=3.10"
-version = "9.10.6"
+version = "9.10.7"
 
 [project.scripts]
 gh1c = "git_hooks_1c.__main__:run"
