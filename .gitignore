@@ -197,5 +197,6 @@ dmypy.json
 
 tests/data
 
-.pdm.toml
 pdm.lock
+.pdm.toml
+.pdm-python
