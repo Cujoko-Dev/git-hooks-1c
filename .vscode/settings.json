@@ -1,4 +1,3 @@
 {
-    "python.analysis.typeCheckingMode": "basic",
-    "python.defaultInterpreterPath": "E:\\Envs\\git-hooks-1c\\Scripts\\python.exe"
+    "python.analysis.typeCheckingMode": "basic"
 }
