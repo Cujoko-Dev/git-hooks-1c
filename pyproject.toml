@@ -11,6 +11,7 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: Russian",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.11",
@@ -38,3 +39,5 @@ gh1c = "git_hooks_1c.__main__:run"
 
 [project.urls]
 repository = "https://github.com/Cujoko-Dev/git-hooks-1c"
+
+[tool.pdm]
