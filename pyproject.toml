@@ -40,4 +40,7 @@ gh1c = "git_hooks_1c.__main__:run"
 [project.urls]
 repository = "https://github.com/Cujoko-Dev/git-hooks-1c"
 
-[tool.pdm]
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
