@@ -44,7 +44,11 @@ package-dir = "../src"
 [tool.pdm.dev-dependencies]
 dev = [
     "-e file:///C:/Dev/Python/commons/.dev#egg=cjk-commons",
-    "-e file:///C:/Dev/Python/parse-1c-build/.dev#egg=parse-1c-build",]
+    "-e file:///C:/Dev/Python/parse-1c-build/.dev#egg=parse-1c-build",
+    
+    # Пакеты B
+    "-e file:///C:/Dev/Python/commons-1c/.dev#egg=commons-1c",
+]
 
 [tool.pdm.scripts]
 test = "pytest"
