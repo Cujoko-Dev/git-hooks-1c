@@ -38,6 +38,9 @@ gh1c = "git_hooks_1c.__main__:run"
 [project.urls]
 repository = "https://github.com/Cujoko-Dev/git-hooks-1c"
 
+[tool.pdm.build]
+package-dir = "../src"
+
 [tool.pdm.dev-dependencies]
 dev = [
     "-e file:///C:/Dev/Python/commons/.dev#egg=cjk-commons",
@@ -48,5 +51,5 @@ test = "pytest"
 
 [tool.pytest.ini_options]
 addopts = "-q"
-pythonpath = ["src"]
-testpaths = ["tests"]
+pythonpath = ["../src"]
+testpaths = ["../tests"]
