@@ -36,6 +36,10 @@ def get_indexed_file_paths() -> list[Path]:
 def get_for_processing_file_paths(file_paths: list[Path]) -> list[Path]:
     result = []
     for file_path in file_paths:
+        # Staged deletions may still be listed by git status/diff output.
+        # Skip missing paths to avoid parsing non-existent binary files.
+        if not file_path.exists():
+            continue
         if file_path.suffix.lower() in bin_file_suffixes:
             if file_path.suffix.lower() in bin_file_to_check_suffixes:
                 with file_path.open("rb") as file:

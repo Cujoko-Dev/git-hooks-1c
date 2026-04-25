@@ -84,3 +84,15 @@ def test_pre_commit_4(repo: Path):
     file_paths = get_indexed_file_paths()
     assert len(file_paths) == 1
     assert file_paths[0] == Path("notes.txt")
+
+
+def test_pre_commit_skips_missing_binary_file(repo: Path):
+    missing_ert_path = Path("deleted.ert")
+    existing_txt_path = repo / "notes.txt"
+    existing_txt_path.write_text("hello", encoding="utf-8")
+
+    for_processing_file_paths = get_for_processing_file_paths(
+        [missing_ert_path, Path("notes.txt")]
+    )
+
+    assert for_processing_file_paths == []
