@@ -1,11 +1,13 @@
 import shutil
 import sys
+import time
 from pathlib import Path
 
 import fleep
 from loguru import logger
 from parse_1c_build import Parser
 from plumbum import local
+from plumbum.commands.processes import ProcessExecutionError
 
 bin_file_suffixes = [".epf", ".erf", ".ert", ".md"]
 bin_file_to_check_suffixes = [".md"]
@@ -68,8 +70,24 @@ def add_to_index(dir_paths: list[Path]) -> None:
 
 def remove_from_index(file_paths: list[Path]) -> None:
     git = local["git"]
-
-    git("rm", "--cached", *[str(file_path) for file_path in file_paths])
+    max_attempts = 3
+    retry_delay_sec = 0.2
+    args = ("rm", "--cached", *[str(file_path) for file_path in file_paths])
+    for attempt in range(1, max_attempts + 1):
+        try:
+            git(*args)
+            return
+        except ProcessExecutionError as exc:
+            stderr = (exc.stderr or "").lower()
+            is_index_write_error = "unable to write new index file" in stderr
+            if not is_index_write_error or attempt == max_attempts:
+                raise
+            logger.warning(
+                "git rm --cached failed to write index file; retrying ({}/{})",
+                attempt,
+                max_attempts,
+            )
+            time.sleep(retry_delay_sec)
 
 
 def run(args) -> None:

@@ -2,6 +2,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from plumbum.commands.processes import ProcessExecutionError
 
 from git_hooks_1c.pre_commit import (
     get_for_processing_file_paths,
@@ -108,3 +109,31 @@ def test_pre_commit_returns_staged_file_with_unstaged_changes(repo: Path):
 
     file_paths = get_indexed_file_paths()
     assert file_paths == [Path("test.ert")]
+
+
+def test_remove_from_index_retries_index_write_error(monkeypatch: pytest.MonkeyPatch):
+    class _FakeGit:
+        def __init__(self):
+            self.calls_count = 0
+
+        def __call__(self, *args):
+            self.calls_count += 1
+            if self.calls_count == 1:
+                raise ProcessExecutionError(
+                    ["git", *args],
+                    128,
+                    "rm 'test.ert'\n",
+                    "fatal: Unable to write new index file\n",
+                )
+            return ""
+
+    fake_git = _FakeGit()
+    monkeypatch.setattr(
+        "git_hooks_1c.pre_commit.local",
+        {"git": fake_git},
+    )
+    monkeypatch.setattr("git_hooks_1c.pre_commit.time.sleep", lambda _: None)
+
+    remove_from_index([Path("test.ert")])
+
+    assert fake_git.calls_count == 2
