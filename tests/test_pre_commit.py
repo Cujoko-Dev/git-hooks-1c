@@ -1,93 +1,86 @@
-import os
-import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
-from cjk_commons.zip import extract_from_zip
 
 from git_hooks_1c.pre_commit import (
     get_for_processing_file_paths,
     get_indexed_file_paths,
-    parse,
     remove_from_index,
 )
 
 
-@pytest.fixture()
-def test(request):
-    def clean():
-        pass
+def _git(repo_path: Path, *args: str) -> str:
+    completed = subprocess.run(
+        ["git", *args],
+        cwd=repo_path,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout
 
-    request.addfinalizer(clean)
+
+@pytest.fixture
+def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    repo_path = tmp_path / "repo"
+    repo_path.mkdir()
+    _git(repo_path, "init")
+    monkeypatch.chdir(repo_path)
+    return repo_path
 
 
-def test_pre_commit_1(test):
-    dir_path = Path(Path(__file__).parent, "data")
-    file_archived_path = Path(dir_path, "1.zip")
-    test_path = Path(dir_path, "1")
-    if test_path.exists():
-        shutil.rmtree(str(test_path))
-    extract_from_zip(file_archived_path, test_path)
-
-    os.chdir(test_path)
-
+def test_pre_commit_1(repo: Path):
     file_paths = get_indexed_file_paths()
     assert len(file_paths) == 0
 
     assert len(get_for_processing_file_paths(file_paths)) == 0
 
 
-def test_pre_commit_2(test):
-    dir_path = Path(Path(__file__).parent, "data")
-    file_archived_path = Path(dir_path, "2.zip")
-    test_path = Path(dir_path, "2")
-    if test_path.exists():
-        shutil.rmtree(str(test_path))
-    extract_from_zip(file_archived_path, test_path)
+def test_pre_commit_2(repo: Path):
+    file_path = repo / "notes.txt"
+    file_path.write_text("hello", encoding="utf-8")
+    _git(repo, "add", "notes.txt")
 
-    os.chdir(test_path)
-
-    file_paths = get_indexed_file_paths()
+    file_paths = sorted(get_indexed_file_paths())
     assert len(file_paths) == 1
+    assert file_paths[0] == Path("notes.txt")
 
     assert len(get_for_processing_file_paths(file_paths)) == 0
 
 
-def test_pre_commit_3(test):
-    dir_path = Path(Path(__file__).parent, "data")
-    file_archived_path = Path(dir_path, "3.zip")
-    test_path = Path(dir_path, "3")
-    if test_path.exists():
-        shutil.rmtree(str(test_path))
-    extract_from_zip(file_archived_path, test_path)
+def test_pre_commit_3(repo: Path):
+    text_path = repo / "notes.txt"
+    text_path.write_text("hello", encoding="utf-8")
 
-    os.chdir(test_path)
+    ert_path = repo / "test.ert"
+    ert_path.write_bytes(b"binary payload")
 
-    file_paths = get_indexed_file_paths()
-    assert len(file_paths) == 2
-
-    assert len(get_for_processing_file_paths(file_paths)) == 1
-
-
-def test_pre_commit_4(test):
-    dir_path = Path(Path(__file__).parent, "data")
-    file_archived_path = Path(dir_path, "4.zip")
-    test_path = Path(dir_path, "4")
-    if test_path.exists():
-        shutil.rmtree(str(test_path))
-    extract_from_zip(file_archived_path, test_path)
-
-    os.chdir(test_path)
+    _git(repo, "add", "notes.txt", "test.ert")
 
     file_paths = get_indexed_file_paths()
     assert len(file_paths) == 2
 
     for_processing_file_paths = get_for_processing_file_paths(file_paths)
-    for_indexing_source_dir_paths = parse(for_processing_file_paths)
+    assert len(for_processing_file_paths) == 1
+    assert for_processing_file_paths[0] == Path("test.ert")
 
-    assert len(for_indexing_source_dir_paths) == 1
+
+def test_pre_commit_4(repo: Path):
+    text_path = repo / "notes.txt"
+    text_path.write_text("hello", encoding="utf-8")
+
+    ert_path = repo / "test.ert"
+    ert_path.write_bytes(b"binary payload")
+
+    _git(repo, "add", "notes.txt", "test.ert")
+
+    file_paths = get_indexed_file_paths()
+    for_processing_file_paths = get_for_processing_file_paths(file_paths)
+    assert for_processing_file_paths == [Path("test.ert")]
 
     remove_from_index(for_processing_file_paths)
 
     file_paths = get_indexed_file_paths()
     assert len(file_paths) == 1
+    assert file_paths[0] == Path("notes.txt")
