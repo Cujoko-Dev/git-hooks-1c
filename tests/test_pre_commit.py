@@ -96,3 +96,15 @@ def test_pre_commit_skips_missing_binary_file(repo: Path):
     )
 
     assert for_processing_file_paths == []
+
+
+def test_pre_commit_returns_staged_file_with_unstaged_changes(repo: Path):
+    ert_path = repo / "test.ert"
+    ert_path.write_bytes(b"payload v1")
+    _git(repo, "add", "test.ert")
+
+    # Reproduce AM status: file is staged and then modified again.
+    ert_path.write_bytes(b"payload v2")
+
+    file_paths = get_indexed_file_paths()
+    assert file_paths == [Path("test.ert")]

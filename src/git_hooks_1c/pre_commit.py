@@ -1,4 +1,3 @@
-import re
 import shutil
 import sys
 from pathlib import Path
@@ -8,7 +7,6 @@ from loguru import logger
 from parse_1c_build import Parser
 from plumbum import local
 
-indexed_pattern = re.compile(r'^\s*[AM]\s+"?(?P<rel_name>[^"]*)"?')
 bin_file_suffixes = [".epf", ".erf", ".ert", ".md"]
 bin_file_to_check_suffixes = [".md"]
 
@@ -16,21 +14,15 @@ logger.disable(__name__)
 
 
 def get_indexed_file_paths() -> list[Path]:
-    result = []
     git = local["git"]
-    try:
-        output = git(
-            "diff-index", "--ignore-submodules", "--name-status", "--cached", "HEAD"
-        )
-    except:
-        output = git("status", "--ignore-submodules", "--porcelain")
-    for line in output.split("\n"):
-        if line != "":
-            match = indexed_pattern.match(line)
-            if match:
-                indexed_file_path = Path(match.group("rel_name"))
-                result.append(indexed_file_path)
-    return result
+    output = git(
+        "diff",
+        "--cached",
+        "--name-only",
+        "--diff-filter=AM",
+        "--ignore-submodules",
+    )
+    return [Path(line) for line in output.splitlines() if line]
 
 
 def get_for_processing_file_paths(file_paths: list[Path]) -> list[Path]:
