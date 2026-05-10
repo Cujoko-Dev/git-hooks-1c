@@ -2,11 +2,6 @@
 build-backend = "pdm.backend"
 requires = ["pdm-backend"]
 
-[dependency-groups]
-dev = [
-    "pytest>=9.0.2",
-]
-
 [project]
 authors = [
     {name = "Cujoko", email = "cujoko@gmail.com"},
@@ -40,11 +35,3 @@ gh1c = "git_hooks_1c.__main__:run"
 
 [project.urls]
 repository = "https://github.com/Cujoko-Dev/git-hooks-1c"
-
-[tool.pdm.scripts]
-test = "pytest"
-
-[tool.pytest.ini_options]
-addopts = "-q"
-pythonpath = ["src"]
-testpaths = ["tests"]
