@@ -13,9 +13,9 @@ ENV/
 __pypackages__/
 
 # PDM
-.pdm-python
 .pdm-build/
-pdm.lock
+.pdm-python
+/.dev/pdm.lock
 
 # Packaging and build artifacts
 build/
