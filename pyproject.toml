@@ -23,15 +23,20 @@ dependencies = [
     "plumbum>=1.8.1",
 ]
 description = "Git hooks utilities for 1C:Enterprise"
+dynamic = ["version"]
 keywords = ["1c", "git", "pre-commit", "v8reader", "v8unpack", "gcomp"]
 license = {text = "MIT"}
 name = "git-hooks-1c"
 readme = "README.md"
 requires-python = ">=3.10"
-version = "9.11.3"
 
 [project.scripts]
 gh1c = "git_hooks_1c.__main__:run"
 
 [project.urls]
 repository = "https://github.com/Cujoko-Dev/git-hooks-1c"
+
+[tool.pdm.version]
+path = "src/git_hooks_1c/_version.py"
+pattern = '^__version__\s*=\s*"([^"]+)"'
+source = "file"
